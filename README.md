@@ -15,7 +15,7 @@ This is the nodejs project for the Web Technology course at ECE Paris-Lyon, ING4
 
 To populate the database, run 
 
-` tsc && ./node_modules/.bin/ts-node bin/populate.ts`
+` npm run populate`
 
 ## Run the server
  
