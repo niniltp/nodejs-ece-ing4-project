@@ -47,7 +47,7 @@ To run unit tests, use
 ## API
 ### Base URL
 
-`https://localhost:8081`
+`http://localhost:8081`
 
 ### Users
 
