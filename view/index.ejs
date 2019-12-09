@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <% include partials/head.ejs %>
+</head>
+<body class="container">
+<div class="col-md-6 col-md-offset-3">
+    <h1 class="mb-2">Hello <%= name %> !</h1>
+    <button class="btn btn-danger mt-2" href="/logout" onClick='document.location.href="/logout"'>Logout</button>
+    <form action="/users/<%= name %>/metrics" class="form-inline  mt-2 mb-2" method="post">
+        <div class="form-group">
+            <label for="form_metric" class="mr-4">Add a metric: </label>
+            <input id="form_metric" class="form-control mr-4" type="number" name="value"/>
+        </div>
+        <button class="btn btn-success" id="save-metric" type="submit" value="Submit">Save</button>
+    </form>
+    <button class="btn btn-primary" id="show-metrics"> Show the metrics</button>
+    <div id="metrics" class="mt-5 mb-5"></div>
+</div>
+</body>
+<script type="text/javascript">
+    $('#show-metrics').click((e) => {
+        e.preventDefault();
+        $.getJSON("/users/<%= name %>/metrics", {}, (data) => {
+            const content = data.map(d => {
+                return 'timestamp: ' + d.timestamp + ', value: ' + d.value + '<br/>';
+            })
+            $('#metrics').html(content);
+        });
+    })
+    $('#save-metric').click((e) => {
+        e.preventDefault();
+        const value = $('#form_metric').val();
+
+        if (value) {
+            const metrics = [{
+                timestamp: (new Date().getTime()).toString(),
+                value: parseFloat(value)
+            }];
+
+            $.ajax("/users/<%= name %>/metrics", {
+                data: JSON.stringify(metrics),
+                method: "POST",
+                contentType: "application/json"
+            });
+
+            $('#form_metric').val("");
+        }
+    })
+</script>
+</html>
