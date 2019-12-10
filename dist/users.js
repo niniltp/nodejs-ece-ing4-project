@@ -20,6 +20,7 @@ var Users = /** @class */ (function () {
     Users.prototype.setPassword = function (toSet) {
         // Hash and set password
         this.password = toSet;
+
     };
     Users.prototype.getPassword = function () {
         return this.password;

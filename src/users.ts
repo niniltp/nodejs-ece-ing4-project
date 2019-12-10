@@ -1,15 +1,19 @@
 import {Leveldb} from './leveldb';
 
+const bcrypt = require('bcrypt');
+const saltRounds = 10;
+const myPlaintextPassword = 's0/\/\P4$$w0rD';
+const someOtherPlaintextPassword = 'not_bacon';
+
 export class Users {
     public username: string;
     public email: string;
     private password: string = "";
 
-    constructor(username: string, email: string, password: string, passwordHashed: boolean = false) {
+    constructor(username: string, email: string, password: string, passwordHashed: boolean = true) {
         this.username = username;
         this.email = email;
-
-        if (!passwordHashed) {
+        if (passwordHashed) {
             this.setPassword(password)
         } else this.password = password
     }
@@ -21,7 +25,9 @@ export class Users {
 
     public setPassword(toSet: string): void {
         // Hash and set password
-        this.password = toSet;
+        var salt = bcrypt.genSaltSync(saltRounds);
+        var hash = bcrypt.hashSync(toSet, salt);
+        this.password = hash;
     }
 
     public getPassword(): string {
@@ -30,7 +36,7 @@ export class Users {
 
     public validatePassword(toValidate: String): boolean {
         // return comparison with hashed password
-        return this.password === toValidate;
+        return bcrypt.compareSync(toValidate, this.password)
     }
 }
 
