@@ -97,7 +97,7 @@ userRouter.post('/', function (req, res, next) {
                 if (err)
                     next(err);
                 else
-                    res.status(201).send("user persisted");
+                    res.status(201).redirect('/');
             });
         }
     });

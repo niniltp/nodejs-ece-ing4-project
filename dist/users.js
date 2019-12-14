@@ -1,13 +1,15 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var leveldb_1 = require("./leveldb");
+var bcrypt = require('bcryptjs');
+var saltRounds = 10;
 var Users = /** @class */ (function () {
     function Users(username, email, password, passwordHashed) {
-        if (passwordHashed === void 0) { passwordHashed = false; }
+        if (passwordHashed === void 0) { passwordHashed = true; }
         this.password = "";
         this.username = username;
         this.email = email;
-        if (!passwordHashed) {
+        if (passwordHashed) {
             this.setPassword(password);
         }
         else
@@ -15,19 +17,20 @@ var Users = /** @class */ (function () {
     }
     Users.fromDb = function (username, value) {
         var _a = value.split(":"), password = _a[0], email = _a[1];
-        return new Users(username, email, password);
+        return new Users(username, email, password, false);
     };
     Users.prototype.setPassword = function (toSet) {
         // Hash and set password
-        this.password = toSet;
-
+        var salt = bcrypt.genSaltSync(saltRounds);
+        var hash = bcrypt.hashSync(toSet, salt);
+        this.password = hash;
     };
     Users.prototype.getPassword = function () {
         return this.password;
     };
     Users.prototype.validatePassword = function (toValidate) {
         // return comparison with hashed password
-        return this.password === toValidate;
+        return bcrypt.compareSync(toValidate, this.password);
     };
     return Users;
 }());
