@@ -102,7 +102,7 @@ userRouter.post('/', (req: any, res: any, next: any) => {
             let user = new Users(req.body.username, req.body.email, req.body.password);
             dbUser.save(user, function (err: Error | null) {
                 if (err) next(err);
-                else res.status(201).send("user persisted");
+                else res.status(201).redirect('/');
             })
         }
     })

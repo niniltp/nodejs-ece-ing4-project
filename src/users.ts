@@ -1,9 +1,7 @@
 import {Leveldb} from './leveldb';
 
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const saltRounds = 10;
-const myPlaintextPassword = 's0/\/\P4$$w0rD';
-const someOtherPlaintextPassword = 'not_bacon';
 
 export class Users {
     public username: string;
@@ -20,7 +18,7 @@ export class Users {
 
     static fromDb(username: string, value: any): Users {
         const [password, email] = value.split(":");
-        return new Users(username, email, password)
+        return new Users(username, email, password, false)
     }
 
     public setPassword(toSet: string): void {
@@ -36,7 +34,7 @@ export class Users {
 
     public validatePassword(toValidate: String): boolean {
         // return comparison with hashed password
-        return bcrypt.compareSync(toValidate, this.password)
+        return bcrypt.compareSync(toValidate, this.password);
     }
 }
 

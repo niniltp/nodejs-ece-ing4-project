@@ -1,4 +1,4 @@
-import { Metric, MetricsHandler } from '../src/metrics';
+import {Metric, MetricsHandler} from '../src/metrics';
 import {UserHandler, Users} from "../src/users";
 
 function getRandomInt(max) {
@@ -18,7 +18,7 @@ users.forEach(user => {
     // Save user
     dbUser.save(user, (err: Error | null) => {
         if (err) throw err;
-        console.log('POPULATE - User ' + user.username +  '  added');
+        console.log('POPULATE - User ' + user.username + '  added');
     });
 
     // Save random metrics
