@@ -1,9 +1,12 @@
 import {Metric, MetricsHandler} from '../src/metrics';
 import {UserHandler, Users} from "../src/users";
+import {Leveldb} from "../src/leveldb";
 
 function getRandomInt(max) {
     return Math.floor(Math.random() * Math.floor(max));
 }
+
+Leveldb.clear('./db');
 
 /* Populate DB */
 const dbUser = new UserHandler('./db/users');
