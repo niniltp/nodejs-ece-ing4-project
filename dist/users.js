@@ -1,4 +1,5 @@
 "use strict";
+
 Object.defineProperty(exports, "__esModule", { value: true });
 var leveldb_1 = require("./leveldb");
 var bcrypt = require('bcryptjs');
@@ -71,11 +72,14 @@ var UserHandler = /** @class */ (function () {
                 callback(null, Users.fromDb(username, data));
         });
     };
-    UserHandler.prototype.save = function (user, callback) {
-        this.db.put("user:" + user.username, user.getPassword() + ":" + user.email, function (err) {
-            callback(err);
-        });
-    };
+    
+        UserHandler.prototype.save = function (user, callback) {
+            this.db.put("user:" + user.username, user.getPassword() + ":" + user.email, function (err) {
+                callback(err);
+            });
+        };
+      
+    
     UserHandler.prototype.delete = function (username, callback) {
         var key = "user:" + username;
         this.db.del(key, function (err) {
@@ -84,4 +88,7 @@ var UserHandler = /** @class */ (function () {
     };
     return UserHandler;
 }());
+
 exports.UserHandler = UserHandler;
+
+
