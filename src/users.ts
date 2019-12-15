@@ -80,9 +80,12 @@ export class UserHandler {
     public save(
         user: Users,
         callback: (err: Error | null) => void) {
-        this.db.put(`user:${user.username}`, `${user.getPassword()}:${user.email}`, (err: Error | null) => {
-            callback(err)
-        })
+            
+                this.db.put(`user:${user.username}`, `${user.getPassword()}:${user.email}`, (err: Error | null) => {
+                    callback(err)
+                })
+              
+        
     }
 
     public delete(username: string, callback: (err: Error | null) => void) {

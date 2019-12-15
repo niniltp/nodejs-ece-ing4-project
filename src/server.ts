@@ -5,9 +5,9 @@ import session = require('express-session');
 import levelSession = require('level-session-store');
 import bodyparser from "body-parser";
 /* METRICS HANDLER */
-import {Metric, MetricsHandler} from './metrics';
+import { Metric, MetricsHandler } from './metrics';
 /* USERS HANDLER*/
-import {UserHandler, Users} from './users';
+import { UserHandler, Users } from './users';
 
 /* EXPRESS */
 const app = express();
@@ -45,12 +45,14 @@ const authRouter = express.Router();
 
 // Show page to log in
 authRouter.get('/login', (req: any, res: any) => {
-    res.render('login')
+    var message = '';
+    res.render('login', {message: message})
 });
 
 // Show page to sign up
 authRouter.get('/signup', (req: any, res: any) => {
-    res.render('signup')
+    var message = '';
+    res.render('signup', {message: message})
 });
 
 // Logout a user
@@ -65,7 +67,10 @@ authRouter.post('/login', (req: any, res: any, next: any) => {
     dbUser.get(req.body.username, (err: Error | null, result?: Users) => {
         if (err) next(err);
         if (result === undefined || !result.validatePassword(req.body.password)) {
-            res.redirect('/login')
+            //res.redirect('/login')
+            var message = " ";
+            message = 'Wrong username or wrong password, please try again.';
+            res.render('login', {message: message});
         } else {
             req.session.loggedIn = true;
             req.session.user = result;
@@ -87,7 +92,7 @@ const authCheck = function (req: any, res: any, next: any) {
 
 // Show index only if user logged in
 app.get('/', authCheck, (req: any, res: any) => {
-    res.render('index', {name: req.session.user.username})
+    res.render('index', { name: req.session.user.username })
 });
 
 /* USERS CRUD */
@@ -96,9 +101,12 @@ const userRouter = express.Router();
 // Create a user
 userRouter.post('/', (req: any, res: any, next: any) => {
     dbUser.get(req.body.username, function (err: Error | null, result?: Users) {
+        var message = "";
         if (!err || result !== undefined) {
-            res.status(409).send("user already exists")
-        } else {
+            message = 'Username already exist ! Please use another one.';
+            res.render('signup', {message: message});
+        }
+        else {
             let user = new Users(req.body.username, req.body.email, req.body.password);
             dbUser.save(user, function (err: Error | null) {
                 if (err) next(err);
@@ -140,7 +148,7 @@ userRouter.delete('/:username', (req: any, res: any) => {
 });
 
 /* METRICS CRUD */
-const metricsRouter = express.Router({mergeParams: true});
+const metricsRouter = express.Router({ mergeParams: true });
 const dbMet: MetricsHandler = new MetricsHandler('./db/metrics');
 
 // Create a metric
