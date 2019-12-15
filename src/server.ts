@@ -90,6 +90,12 @@ app.get('/', authCheck, (req: any, res: any) => {
     res.render('index', {name: req.session.user.username})
 });
 
+/* Test Graphique */
+// Show page for charts
+authRouter.get('/graph', (req: any, res: any) => {
+    res.render('graphTest')
+});
+
 /* USERS CRUD */
 const userRouter = express.Router();
 
