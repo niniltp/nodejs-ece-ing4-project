@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <% include partials/head.ejs %>
+</head>
+<body class="container">
+<div class="col-md-6 col-md-offset-3">
+    <h1 class="mb-2">Hello <%= name %> !</h1>
+    <button class="btn btn-danger mt-2" href="/logout" onClick='document.location.href="/logout"'>Logout</button>
+    <form action="/users/<%= name %>/metrics" class="form-inline  mt-2 mb-2" method="post">
+        <div class="form-group">
+            <label for="form_metric" class="mr-4">Modify a metric : </label>
+            <input id="select_metric" class="form-control mr-4" type="text" name="metricID" placeholder="Enter metric ID"/>
+            <input id="form_metric" class="form-control mr-4" type="number" name="value" placeholder="Enter its new value"/>
+        </div>
+        <button class="btn btn-success mt-2" id="change-metric" type="submit" value="Submit">Change metric</button>
+    </form>
+    <form action="/users/<%= name %>/metrics" class="form-inline  mt-2 mb-2" method="post">
+        <div class="form-group">
+            <label for="form_metric" class="mr-4">Delete a metric : </label>
+            <input id="select_metric" class="form-control mr-4" type="text" name="metricID" placeholder="Enter metric ID"/>
+        </div>
+        <button class="btn btn-danger mt-2" id="delete-metric" type="submit" value="Submit">Delete metric</button>
+    </form>
+    <button class="btn btn-primary mt-2" id="show-metrics"> Show the metrics</button>
+    <div id="metrics" class="mt-5 mb-5"></div>
+</div>
+</body>
+<script type="text/javascript">
+    $('#show-metrics').click((e) => {
+        e.preventDefault();
+        $.getJSON("/users/<%= name %>/metrics", {}, (data) => {
+            const content = data.map(d => {
+                return 'timestamp: ' + d.timestamp + ', value: ' + d.value + '<br/>';
+            })
+            $('#metrics').html(content);
+        });
+    })
+</script>
+</html>
