@@ -2,7 +2,7 @@ import {expect} from 'chai'
 import {Metric, MetricsHandler} from '../metrics'
 import {Leveldb} from "../leveldb"
 
-const dbPath: string = './db/test';
+const dbPath: string = './db/test/metrics';
 var dbMet: MetricsHandler;
 
 describe('Metrics', function () {

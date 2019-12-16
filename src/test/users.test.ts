@@ -2,7 +2,7 @@ import {expect} from 'chai'
 import {Leveldb} from "../leveldb"
 import {UserHandler, Users} from "../users";
 
-const dbPath: string = './db/test';
+const dbPath: string = './db/test/users';
 var dbUser: UserHandler;
 
 const bcrypt = require('bcryptjs');
@@ -43,8 +43,8 @@ describe('Users', function () {
                             expect(isMatch).to.be.true
                         })
                     }
+                    done()
                 });
-                done()
             })
         })
     });
