@@ -1,11 +1,8 @@
-import {Metric, MetricsHandler} from '../src/metrics';
-import {UserHandler, Users} from "../src/users";
-import {Leveldb} from "../src/leveldb";
+import {Metric, MetricsHandler} from '../src/models/metrics';
+import {UserHandler, Users} from "../src/models/users";
+import {Leveldb} from "../src/models/leveldb";
 
-function getRandomInt(max) {
-    return Math.floor(Math.random() * Math.floor(max));
-}
-
+const rand = require('../src/helpers/random');
 Leveldb.clear('./db');
 
 /* Populate DB */
@@ -26,9 +23,9 @@ users.forEach(user => {
 
     // Save random metrics
     const metrics = [
-        new Metric(`${new Date().getTime() + getRandomInt(100)}`, getRandomInt(100)),
-        new Metric(`${new Date().getTime() + getRandomInt(100)}`, getRandomInt(100)),
-        new Metric(`${new Date().getTime() + getRandomInt(100)}`, getRandomInt(100)),
+        new Metric(`${new Date().getTime() + rand.getRandomInt(100)}`, rand.getRandomInt(100)),
+        new Metric(`${new Date().getTime() + rand.getRandomInt(100)}`, rand.getRandomInt(100)),
+        new Metric(`${new Date().getTime() + rand.getRandomInt(100)}`, rand.getRandomInt(100)),
     ];
 
     dbMet.save(user.username, metrics, (err: Error | null) => {
