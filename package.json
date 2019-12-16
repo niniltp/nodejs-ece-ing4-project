@@ -4,7 +4,7 @@
   "description": "",
   "main": "src/server.ts",
   "scripts": {
-    "test": "./node_modules/.bin/mocha -r ts-node/register src/**/*.test.ts",
+    "test": "./node_modules/.bin/mocha -r ts-node/register src/**/*.test.ts --timeout 10000 --exit",
     "build": "./node_modules/.bin/tsc -p tsconfig.json",
     "start": "./node_modules/.bin/ts-node src/server.ts",
     "dev": "./node_modules/.bin/nodemon ",
