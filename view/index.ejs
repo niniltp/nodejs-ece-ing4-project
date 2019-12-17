@@ -6,14 +6,37 @@
 <body class="container">
 <div class="col-md-6 col-md-offset-3">
     <h1 class="mb-2">Hello <%= name %> !</h1>
+    <hr>
     <button class="btn btn-danger mt-2" href="/logout" onClick='document.location.href="/logout"'>Logout</button>
+    <hr> 
     <form action="/users/<%= name %>/metrics" class="form-inline  mt-2 mb-2" method="post">
         <div class="form-group">
             <label for="form_metric" class="mr-4">Add a metric: </label>
-            <input id="form_metric" class="form-control mr-4" type="number" name="value"/>
+            <input id="form_metric" class="form-control mr-4" type="number" name="value" placeholder="Enter metric value"/>
         </div>
         <button class="btn btn-success" id="save-metric" type="submit" value="Submit">Save</button>
     </form>
+    <hr>
+    <form action="/users/<%= name %>/metrics" class="form-inline  mt-2 mb-2" method="post">
+        <div class="form-group">
+            <label for="modify_metric" class="mr-4">Modify a metric : </label>
+            <input id="modify_metric" class="form-control mr-4" type="text" name="metricID"
+                placeholder="Enter metric ID" />
+            <input id="modify_form_metric" class="form-control mr-4" type="number" name="new_value"
+                placeholder="Enter its new value" />
+        </div>
+        <button class="btn btn-success mt-2" id="change-metric" type="submit" value="Submit">Change metric</button>
+    </form>
+    <hr>
+    <form action="/users/<%= name %>/metrics" class="form-inline  mt-2 mb-2" method="post">
+        <div class="form-group">
+            <label for="erase_metric" class="mr-4">Delete a metric : </label>
+            <input id="erase_metric" class="form-control mr-4" type="text" name="metricID"
+                placeholder="Enter metric ID" />
+        </div>
+        <button class="btn btn-danger mt-2" id="delete-metric" type="submit" value="Submit">Delete metric</button>
+    </form>
+    <hr>
     <button class="btn btn-primary" id="show-metrics"> Show the metrics</button>
     <div id="metrics" class="mt-5 mb-5"></div>
 </div>
@@ -46,6 +69,45 @@
 
             $('#form_metric').val("");
         }
+    })
+
+    $('#change-metric').click((e) => {
+        e.preventDefault();
+        const valueID = $('#modify_metric').val();
+        const value = $('#modify_form_metric').val();
+
+        if (value) {
+            if (valueID) {
+                const metrics = [{
+                    timestamp: parseFloat(valueID),
+                    value: parseFloat(value)
+                }];
+                $.ajax("/users/<%= name %>/metrics", {
+                    data: JSON.stringify(metrics),
+                    method: "POST",
+                    contentType: "application/json"
+                });
+
+                $('#modify_metric').val("");
+                $('#modify_form_metric').val("");
+            }
+        }
+    })
+
+    $('#delete-metric').click((e) => {
+        e.preventDefault();
+        const valueID = $('#erase_metric').val();
+        
+        if (valueID) {
+            const metric_id = parseFloat(valueID);
+            $.ajax("/users/<%= name %>/metrics/"+metric_id, {
+                method: "DELETE",
+                contentType: "application/json"
+            });
+
+            $('#erase_metric').val("");
+        }
+
     })
 </script>
 </html>

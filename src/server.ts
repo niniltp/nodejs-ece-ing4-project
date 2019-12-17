@@ -45,13 +45,13 @@ const authRouter = express.Router();
 
 // Show page to log in
 authRouter.get('/login', (req: any, res: any) => {
-    var message = '';
+    var message = 'Welcome';
     res.render('login', {message: message})
 });
 
 // Show page to sign up
 authRouter.get('/signup', (req: any, res: any) => {
-    var message = '';
+    var message = 'Welcome';
     res.render('signup', {message: message})
 });
 
@@ -69,7 +69,7 @@ authRouter.post('/login', (req: any, res: any, next: any) => {
         if (result === undefined || !result.validatePassword(req.body.password)) {
             //res.redirect('/login')
             var message = " ";
-            message = 'Wrong username or wrong password, please try again.';
+            message = 'Wrong username or wrong password, please try again ';
             res.render('login', {message: message});
         } else {
             req.session.loggedIn = true;
@@ -95,6 +95,10 @@ app.get('/', authCheck, (req: any, res: any) => {
     res.render('index', { name: req.session.user.username })
 });
 
+app.get('/modify', authCheck, (req: any, res: any) => {
+    res.render('modify', { name: req.session.user.username })
+});
+
 /* USERS CRUD */
 const userRouter = express.Router();
 
@@ -102,10 +106,13 @@ const userRouter = express.Router();
 userRouter.post('/', (req: any, res: any, next: any) => {
     dbUser.get(req.body.username, function (err: Error | null, result?: Users) {
         var message = "";
+        var done = true;
         if (!err || result !== undefined) {
-            message = 'Username already exist ! Please use another one.';
+            message = 'Username already exist ! Please use another one ';
             res.render('signup', {message: message});
+            done = false;
         }
+
         else {
             let user = new Users(req.body.username, req.body.email, req.body.password);
             dbUser.save(user, function (err: Error | null) {
