@@ -60,13 +60,11 @@
                 timestamp: (new Date().getTime()).toString(),
                 value: parseFloat(value)
             }];
-
             $.ajax("/users/<%= name %>/metrics", {
                 data: JSON.stringify(metrics),
                 method: "POST",
                 contentType: "application/json"
             });
-
             $('#form_metric').val("");
         }
     })
@@ -89,13 +87,11 @@
                     method: "PUT",
                     contentType: "application/json"
                 });
-
                 $('#modify_metric').val("");
                 $('#modify_form_metric').val("");
             }
         }
     })
-
     $('#delete-metric').click((e) => {
         e.preventDefault();
         const valueID = $('#erase_metric').val();
@@ -106,7 +102,6 @@
                 method: "DELETE",
                 contentType: "application/json"
             });
-
             $('#erase_metric').val("");
         }
 
