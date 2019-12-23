@@ -95,10 +95,6 @@ app.get('/', authCheck, (req: any, res: any) => {
     res.render('index', { name: req.session.user.username })
 });
 
-app.get('/modify', authCheck, (req: any, res: any) => {
-    res.render('modify', { name: req.session.user.username })
-});
-
 /* USERS CRUD */
 const userRouter = express.Router();
 

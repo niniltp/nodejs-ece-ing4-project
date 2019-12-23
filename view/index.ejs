@@ -8,6 +8,7 @@
     <h1 class="mb-2">Hello <%= name %> !</h1>
     <hr>
     <button class="btn btn-danger mt-2" href="/logout" onClick='document.location.href="/logout"'>Logout</button>
+    <h3><%= message %> !</h3>
     <hr> 
     <form action="/users/<%= name %>/metrics" class="form-inline  mt-2 mb-2" method="post">
         <div class="form-group">
@@ -65,6 +66,7 @@
                 method: "POST",
                 contentType: "application/json"
             });
+            alert("Metric added successfully.")
             $('#form_metric').val("");
         }
     })
@@ -73,7 +75,6 @@
         e.preventDefault();
         const valueID = $('#modify_metric').val();
         const value = $('#modify_form_metric').val();
-
         if (value) {
             if (valueID) {
                 const metrics = [{
@@ -85,6 +86,7 @@
                     method: "POST",
                     contentType: "application/json"
                 });
+                alert("Metric modified successfully.");
                 $('#modify_metric').val("");
                 $('#modify_form_metric').val("");
             }
@@ -100,6 +102,7 @@
                 method: "DELETE",
                 contentType: "application/json"
             });
+            alert("Metric deleted successfully.");
             $('#erase_metric').val("");
         }
 
