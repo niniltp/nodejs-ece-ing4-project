@@ -1,16 +1,15 @@
 import {Users} from "../models/users";
-
-process.env.NODE_ENV = 'test';
-import chai, {expect} from 'chai';
+import chai from 'chai';
 import chaiHttp from 'chai-http';
 import {Leveldb} from "../models/leveldb";
 
-const { app, closeServer, closeDBs} = require('../server');
+process.env.NODE_ENV = 'test';
+
+const {app, closeServer, closeDBs} = require('../server');
 chai.use(chaiHttp);
 
 const config = require('../helpers/_config');
 const dbPath = config.dbPath[process.env.NODE_ENV];
-
 
 describe('API', () => {
     describe('Users', () => {
@@ -98,6 +97,6 @@ describe('API', () => {
         closeDBs();
         closeServer();
         Leveldb.clear(dbPath + '/metrics');
-        Leveldb.clear(dbPath +'/users');
+        Leveldb.clear(dbPath + '/users');
     })
 });

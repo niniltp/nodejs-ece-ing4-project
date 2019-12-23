@@ -2,7 +2,9 @@ import {expect} from 'chai'
 import {Leveldb} from "../models/leveldb"
 import {Metric, MetricsHandler} from '../models/metrics'
 
+const {createFile} = require('../helpers/files');
 const dbPath: string = './db_test_metrics';
+createFile(dbPath);
 let dbMet: MetricsHandler;
 
 describe('Metrics', function () {
