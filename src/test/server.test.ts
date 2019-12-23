@@ -8,6 +8,7 @@ process.env.NODE_ENV = 'test';
 const {app, closeServer, closeDBs} = require('../server');
 chai.use(chaiHttp);
 
+const {createFile} = require('../helpers/files');
 const config = require('../helpers/_config');
 const dbPath = config.dbPath[process.env.NODE_ENV];
 
@@ -98,5 +99,7 @@ describe('API', () => {
         closeServer();
         Leveldb.clear(dbPath + '/metrics');
         Leveldb.clear(dbPath + '/users');
+        createFile(dbPath + '/metrics');
+        createFile(dbPath + '/users');
     })
 });
