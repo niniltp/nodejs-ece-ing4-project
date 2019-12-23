@@ -12,13 +12,13 @@ npm-debug.log*
 
 .idea/
 
-/db
-/db_test/*
-/db_test_metrics/*
-/db_test_users/*
-#*.log
-#*.ldb
-#LOG
-#LOG.old
-#LOCK
-#CURRENT
+#/db
+#/db_test/*
+#/db_test_metrics/*
+#/db_test_users/*
+*.log
+*.ldb
+LOG
+LOG.old
+LOCK
+CURRENT
