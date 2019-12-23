@@ -2,7 +2,7 @@ import {expect} from 'chai'
 import {Leveldb} from "../models/leveldb"
 import {UserHandler, Users} from "../models/users";
 
-const dbPath: string = './db_test/users';
+const dbPath: string = './db_test_users';
 var dbUser: UserHandler;
 
 const bcrypt = require('bcryptjs');

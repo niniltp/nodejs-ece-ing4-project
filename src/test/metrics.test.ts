@@ -1,8 +1,8 @@
 import {expect} from 'chai'
-import {Metric, MetricsHandler} from '../models/metrics'
 import {Leveldb} from "../models/leveldb"
+import {Metric, MetricsHandler} from '../models/metrics'
 
-const dbPath: string = './db_test/metrics';
+const dbPath: string = './db_test_metrics';
 let dbMet: MetricsHandler;
 
 describe('Metrics', function () {
