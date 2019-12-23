@@ -81,8 +81,6 @@
                     timestamp: valueID,
                     value: parseFloat(value)
                 };
-                console.log(JSON.stringify(metric));
-                console.log("/users/<%= name %>/metrics/"+valueID);
                 $.ajax("/users/<%= name %>/metrics/"+valueID, {
                     data: JSON.stringify(metric),
                     method: "PUT",
