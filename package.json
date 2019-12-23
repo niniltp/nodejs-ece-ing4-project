@@ -4,7 +4,7 @@
   "description": "",
   "main": "src/server.ts",
   "scripts": {
-    "test": "./node_modules/.bin/mocha -r ts-node/register src/**/*.test.ts",
+    "test": "./node_modules/.bin/mocha -r ts-node/register src/test/*.test.ts --timeout 10000 --exit",
     "build": "./node_modules/.bin/tsc -p tsconfig.json",
     "start": "./node_modules/.bin/ts-node src/server.ts",
     "dev": "./node_modules/.bin/nodemon ",
@@ -19,6 +19,7 @@
     "@types/mocha": "^5.2.7",
     "@types/node": "^12.12.14",
     "chai": "^4.2.0",
+    "chai-http": "^4.3.0",
     "mocha": "^6.2.2",
     "nodemon": "^2.0.1",
     "ts-node": "^8.5.2",

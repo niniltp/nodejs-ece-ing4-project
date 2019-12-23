@@ -1,204 +1,58 @@
-// importing modules
 import express = require('express');
-/* SESSION */
 import session = require('express-session');
 import levelSession = require('level-session-store');
 import bodyparser from "body-parser";
-/* METRICS HANDLER */
-import { Metric, MetricsHandler } from './metrics';
-/* USERS HANDLER*/
-import { UserHandler, Users } from './users';
 
-/* EXPRESS */
 const app = express();
 const port: string = process.env.PORT || '8081';
+const LevelStore = levelSession(session);
+
+const {createFile} = require('./helpers/files');
+const config = require('./helpers/_config');
+
+const {authRouter, closeUserAuthDB} = require('./routes/authentication');
+const {usersRouter, closeUserDB} = require('./routes/users');
+const {metricsRouter, closeMetricDB} = require('./routes/metrics');
 
 /* VIEW ENGINE EJS */
 app.set('views', __dirname + "/../view");
 app.set('view engine', 'ejs');
 
-/* MIDDLEWARES body-parser */
+const dbPath = process.env.NODE_ENV === 'test' ? config.dbPath['test'] : config.dbPath['development'];
+createFile(dbPath);
+
+usersRouter.use("/:username/metrics", metricsRouter);
+
 app.use(bodyparser.json());
 app.use(bodyparser.urlencoded());
+app.use(session({
+    secret: 'super secret phrase',
+    store: new LevelStore(dbPath + '/sessions'),
+    resave: true,
+    saveUninitialized: true
+}));
+app.use("/", authRouter);
+app.use("/users", usersRouter);
 
 /* SERVER LISTENING */
-app.listen(port, (err: Error) => {
+const server = app.listen(port, (err: Error) => {
     if (err) {
         throw err;
     }
     console.log(`server is listening on port ${port}`);
 });
 
-/* SESSION */
-const LevelStore = levelSession(session);
-
-app.use(session({
-    secret: 'my very secret phrase',
-    store: new LevelStore('./db/sessions'),
-    resave: true,
-    saveUninitialized: true
-}));
-
-/* USER AUTHENTICATION */
-const dbUser: UserHandler = new UserHandler('./db/users');
-const authRouter = express.Router();
-
-// Show page to log in
-authRouter.get('/login', (req: any, res: any) => {
-    var message = 'Welcome';
-    res.render('login', {message: message})
-});
-
-// Show page to sign up
-authRouter.get('/signup', (req: any, res: any) => {
-    var message = 'Welcome';
-    res.render('signup', {message: message})
-});
-
-// Logout a user
-authRouter.get('/logout', (req: any, res: any) => {
-    delete req.session.loggedIn;
-    delete req.session.user;
-    res.redirect('/login')
-});
-
-// Connect a user
-authRouter.post('/login', (req: any, res: any, next: any) => {
-    dbUser.get(req.body.username, (err: Error | null, result?: Users) => {
-        if (err) next(err);
-        if (result === undefined || !result.validatePassword(req.body.password)) {
-            //res.redirect('/login')
-            var message = " ";
-            message = 'Wrong username or wrong password, please try again ';
-            res.render('login', {message: message});
-        } else {
-            req.session.loggedIn = true;
-            req.session.user = result;
-            res.redirect('/')
-        }
-    })
-});
-
-app.use(authRouter);
-
-/* USER AUTHORIZATION MIDDLEWARE */
-
-// Check if user logged in
-const authCheck = function (req: any, res: any, next: any) {
-    if (req.session.loggedIn) {
-        next();
-    } else res.redirect('/login')
+const closeDBs = () => {
+    closeMetricDB();
+    closeUserDB();
+    closeUserAuthDB();
 };
 
-// Show index only if user logged in
-app.get('/', authCheck, (req: any, res: any) => {
-    res.render('index', { name: req.session.user.username })
-});
+const closeServer = () => {
+    closeDBs();
+    server.close();
+};
 
-app.get('/modify', authCheck, (req: any, res: any) => {
-    res.render('modify', { name: req.session.user.username })
-});
-
-/* USERS CRUD */
-const userRouter = express.Router();
-
-// Create a user
-userRouter.post('/', (req: any, res: any, next: any) => {
-    dbUser.get(req.body.username, function (err: Error | null, result?: Users) {
-        var message = "";
-        var done = true;
-        if (!err || result !== undefined) {
-            message = 'Username already exist ! Please use another one ';
-            res.render('signup', {message: message});
-            done = false;
-        }
-
-        else {
-            let user = new Users(req.body.username, req.body.email, req.body.password);
-            dbUser.save(user, function (err: Error | null) {
-                if (err) next(err);
-                else res.status(201).redirect('/');
-            })
-        }
-    })
-});
-
-// Get all users
-userRouter.get('/', (req: any, res: any, next: any) => {
-    dbUser.getAll(function (err: Error | null, result?: Users[]) {
-        if (err || result === undefined) {
-            res.status(404).send("users not found")
-        } else res.status(200).json(result)
-    })
-});
-
-// Get a user
-userRouter.get('/:username', (req: any, res: any, next: any) => {
-    dbUser.get(req.params.username, function (err: Error | null, result?: Users) {
-        if (err || result === undefined) {
-            res.status(404).send("user not found")
-        } else res.status(200).json(result)
-    })
-});
-
-// Delete a user
-userRouter.delete('/:username', (req: any, res: any) => {
-    dbUser.delete(req.params.username, (err: Error | null) => {
-        if (err) {
-            res.status(404).send("User not found");
-            printLog("ERROR", "delete user");
-        } else {
-            res.status(200).send("Delete successful !");
-            printLog("INFO", "delete user");
-        }
-    })
-});
-
-/* METRICS CRUD */
-const metricsRouter = express.Router({ mergeParams: true });
-const dbMet: MetricsHandler = new MetricsHandler('./db/metrics');
-
-// Create a metric
-metricsRouter.post('/', authCheck, (req: any, res: any) => {
-    dbMet.save(req.params.username, req.body, (err: Error | null) => {
-        if (err) throw err;
-        printLog("INFO", "saved");
-        res.status(200).send("ok")
-    })
-});
-
-// Get metrics of a user
-metricsRouter.get('/', authCheck, (req: any, res: any) => {
-    dbMet.get(req.params.username, null, (err: Error | null, result?: Metric[] | null) => {
-        if (err) throw err;
-        console.log("get");
-        res.status(200).send(result);
-    })
-});
-
-// Get one metric of a user
-metricsRouter.get('/:metricId', authCheck, (req: any, res: any) => {
-    dbMet.get(req.params.username, req.params.metricId, (err: Error | null, result?: Metric[] | null) => {
-        if (err) throw err;
-        console.log("getById");
-        res.status(200).send(result);
-    })
-});
-
-// Delete a metric
-metricsRouter.delete('/:metricId', authCheck, (req: any, res: any) => {
-    dbMet.delete(req.params.username, req.params.metricId, (err: Error | null) => {
-        if (err) throw err;
-        console.log("deleteByTimestamp");
-        res.status(200).send("Delete successful !");
-    })
-});
-
-userRouter.use('/:username/metrics', metricsRouter);
-app.use('/users', userRouter);
-
-/* UTILS */
-function printLog(type: string, msg: string) {
-    // INFO, WARN, ERROR, DEBUG
-    console.log("[" + new Date().toString() + "] " + type.toUpperCase() + " - " + msg);
-}
+module.exports = {
+    app, closeServer, closeDBs
+};

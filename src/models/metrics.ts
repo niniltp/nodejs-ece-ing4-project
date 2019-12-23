@@ -50,16 +50,23 @@ export class MetricsHandler {
                 }
             })
             .on('error', function (err) {
-                console.log('Oh my!', err);
                 callback(err);
             })
             .on('close', function () {
-                console.log('Stream closed');
                 callback(null, metrics);
-            })
-            .on('end', function () {
-                console.log('Stream ended')
             });
+    }
+
+    public update(
+        username: string,
+        metricId: string,
+        metric: Metric,
+        callback: (error: Error | null) => void) {
+        const stream = WriteStream(this.db);
+        stream.on('error', callback);
+        stream.on('close', callback);
+        stream.write({key: `metric:${username}:${metricId}`, value: metric.value});
+        stream.end()
     }
 
     public delete(

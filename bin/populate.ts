@@ -1,12 +1,14 @@
-import {Metric, MetricsHandler} from '../src/metrics';
-import {UserHandler, Users} from "../src/users";
-import {Leveldb} from "../src/leveldb";
+import {Metric, MetricsHandler} from '../src/models/metrics';
+import {UserHandler, Users} from "../src/models/users";
+import {Leveldb} from "../src/models/leveldb";
 
-function getRandomInt(max) {
-    return Math.floor(Math.random() * Math.floor(max));
-}
+const config = require('../src/helpers/_config');
+const {createFile} = require('../src/helpers/files');
+const {getRandomInt} = require('../src/helpers/random');
 
-Leveldb.clear('./db');
+const dbPath = config.dbPath['development'];
+createFile(dbPath);
+Leveldb.clear(dbPath);
 
 /* Populate DB */
 const dbUser = new UserHandler('./db/users');
