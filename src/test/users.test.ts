@@ -85,7 +85,7 @@ describe('Users', function () {
             let updatedUser: Users = new Users(username, newEmail, newPassword);
 
             dbUser.save(user, function (err: Error | null, result?: Users[]) {
-                dbUser.save(updatedUser, function (err: Error | null, result?: Users[]) {
+                dbUser.update(username, updatedUser, function (err: Error | null, result?: Users[]) {
                     dbUser.get(username, function (err: Error | null, result?: Users) {
                         expect(err).to.be.null;
                         expect(result).to.not.be.undefined;

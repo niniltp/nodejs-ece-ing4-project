@@ -53,11 +53,9 @@ describe('Metrics', function () {
             const value: number = 1;
             const newValue: number = 99;
 
-            metrics.push(new Metric(timestamp, value));
+            const updatedMetric = new Metric(timestamp, newValue);
             dbMet.save(username, metrics, function (err: Error | null, result?: Metric[]) {
-                metrics.pop();
-                metrics.push(new Metric(timestamp, newValue));
-                dbMet.save(username, metrics, function (err: Error | null, result?: Metric[]) {
+                dbMet.update(username, timestamp, updatedMetric, function (err: Error | null, result?: Metric[]) {
                     dbMet.get(username, timestamp, function (err: Error | null, result?: Metric[]) {
                         expect(err).to.be.null;
                         expect(result).to.not.be.undefined;
