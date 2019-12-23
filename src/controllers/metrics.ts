@@ -26,6 +26,21 @@ exports.getOne = (req: any, res: any) => {
     })
 };
 
+exports.update = (req: any, res: any) => {
+    dbMet.get(req.params.username, req.params.metricId, (err: Error | null, result?: Metric[] | null) => {
+        if (err) throw err;
+
+        if (!err && result !== undefined && result !== null && result.length === 1) {
+            dbMet.update(req.params.username, req.params.metricId, req.body, (err: Error | null) => {
+                if (err) throw err;
+                res.status(200).json(req.body);
+            });
+        } else {
+            res.status(409).send("Metric does not exist");
+        }
+    })
+};
+
 exports.delete = (req: any, res: any) => {
     dbMet.delete(req.params.username, req.params.metricId, (err: Error | null) => {
         if (err) throw err;

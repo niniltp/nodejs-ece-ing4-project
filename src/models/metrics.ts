@@ -57,6 +57,18 @@ export class MetricsHandler {
             });
     }
 
+    public update(
+        username: string,
+        metricId: string,
+        metric: Metric,
+        callback: (error: Error | null) => void) {
+        const stream = WriteStream(this.db);
+        stream.on('error', callback);
+        stream.on('close', callback);
+        stream.write({key: `metric:${username}:${metricId}`, value: metric.value});
+        stream.end()
+    }
+
     public delete(
         username: string,
         timestampId: string,
