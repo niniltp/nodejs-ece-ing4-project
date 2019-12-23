@@ -2,10 +2,12 @@ import {Metric, MetricsHandler} from '../src/models/metrics';
 import {UserHandler, Users} from "../src/models/users";
 import {Leveldb} from "../src/models/leveldb";
 
-const rand = require('../src/helpers/random');
 const config = require('../src/helpers/_config');
+const {createFile} = require('../src/helpers/files');
+const {getRandomInt} = require('../src/helpers/random');
 
 const dbPath = config.dbPath['development'];
+createFile(dbPath);
 Leveldb.clear(dbPath);
 
 /* Populate DB */
@@ -26,9 +28,9 @@ users.forEach(user => {
 
     // Save random metrics
     const metrics = [
-        new Metric(`${new Date().getTime() + rand.getRandomInt(100)}`, rand.getRandomInt(100)),
-        new Metric(`${new Date().getTime() + rand.getRandomInt(100)}`, rand.getRandomInt(100)),
-        new Metric(`${new Date().getTime() + rand.getRandomInt(100)}`, rand.getRandomInt(100)),
+        new Metric(`${new Date().getTime() + getRandomInt(100)}`, getRandomInt(100)),
+        new Metric(`${new Date().getTime() + getRandomInt(100)}`, getRandomInt(100)),
+        new Metric(`${new Date().getTime() + getRandomInt(100)}`, getRandomInt(100)),
     ];
 
     dbMet.save(user.username, metrics, (err: Error | null) => {
