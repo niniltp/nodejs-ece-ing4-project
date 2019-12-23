@@ -3,7 +3,10 @@ import {UserHandler, Users} from "../src/models/users";
 import {Leveldb} from "../src/models/leveldb";
 
 const rand = require('../src/helpers/random');
-Leveldb.clear('./db');
+const config = require('../src/helpers/_config');
+
+const dbPath = config.dbPath['development'];
+Leveldb.clear(dbPath);
 
 /* Populate DB */
 const dbUser = new UserHandler('./db/users');
