@@ -9,7 +9,7 @@
     <hr>
     <button class="btn btn-danger mt-2" href="/logout" onClick='document.location.href="/logout"'>Logout</button>
     <hr> 
-    <form action="/users/<%= name %>/metrics" class="form-inline  mt-2 mb-2" method="post">
+    <form action="#" class="form-inline  mt-2 mb-2" method="post">
         <div class="form-group">
             <label for="form_metric" class="mr-4">Add a metric: </label>
             <input id="form_metric" class="form-control mr-4" type="number" name="value" placeholder="Enter metric value"/>
@@ -17,7 +17,7 @@
         <button class="btn btn-success" id="save-metric" type="submit" value="Submit">Save</button>
     </form>
     <hr>
-    <form action="/users/<%= name %>/metrics" class="form-inline  mt-2 mb-2" method="post">
+    <form action="#" class="form-inline  mt-2 mb-2" method="post">
         <div class="form-group">
             <label for="modify_metric" class="mr-4">Modify a metric : </label>
             <input id="modify_metric" class="form-control mr-4" type="text" name="metricID"
@@ -78,13 +78,15 @@
 
         if (value) {
             if (valueID) {
-                const metrics = [{
-                    timestamp: parseFloat(valueID),
+                const metric = {
+                    timestamp: valueID,
                     value: parseFloat(value)
-                }];
-                $.ajax("/users/<%= name %>/metrics", {
-                    data: JSON.stringify(metrics),
-                    method: "POST",
+                };
+                console.log(JSON.stringify(metric));
+                console.log("/users/<%= name %>/metrics/"+valueID);
+                $.ajax("/users/<%= name %>/metrics/"+valueID, {
+                    data: JSON.stringify(metric),
+                    method: "PUT",
                     contentType: "application/json"
                 });
 
