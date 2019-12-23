@@ -29,7 +29,7 @@
         <button class="btn btn-success mt-2" id="change-metric" type="submit" value="Submit">Change metric</button>
     </form>
     <hr>
-    <form action="/users/<%= name %>/metrics" class="form-inline  mt-2 mb-2" method="post">
+    <form action="#" class="form-inline  mt-2 mb-2" method="post">
         <div class="form-group">
             <label for="erase_metric" class="mr-4">Delete a metric : </label>
             <input id="erase_metric" class="form-control mr-4" type="text" name="metricID"
@@ -99,8 +99,7 @@
         const valueID = $('#erase_metric').val();
         
         if (valueID) {
-            const metric_id = parseFloat(valueID);
-            $.ajax("/users/<%= name %>/metrics/"+metric_id, {
+            $.ajax("/users/<%= name %>/metrics/"+valueID, {
                 method: "DELETE",
                 contentType: "application/json"
             });
