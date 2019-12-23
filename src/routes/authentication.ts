@@ -1,17 +1,20 @@
 import express = require('express');
 
-const router = express.Router();
-const users = require('../controllers/users');
+const authRouter = express.Router();
+const user = require('../controllers/users');
 const redirect = require('../controllers/redirection');
 const auth = require('../helpers/authentication');
 
-router.get('/', auth.authCheck, redirect.showIndexPage);
+authRouter.get('/', auth.authCheck, redirect.showIndexPage);
 
-router.post('/login', users.connect);
-router.get('/login', redirect.showLoginPage);
-router.get('/logout', users.disconnect);
+authRouter.post('/login', user.connect);
+authRouter.get('/login', redirect.showLoginPage);
+authRouter.get('/logout', user.disconnect);
 
-router.get('/signup', redirect.showSignUpPage);
+authRouter.get('/signup', redirect.showSignUpPage);
 
+const closeUserAuthDB = () => {
+    user.closeDB();
+};
 
-module.exports = router;
+module.exports = {authRouter, closeUserAuthDB};

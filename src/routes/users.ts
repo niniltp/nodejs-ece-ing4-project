@@ -1,11 +1,15 @@
 import express = require('express');
 
-const router = express.Router();
+const usersRouter = express.Router();
 const user = require('../controllers/users');
 
-router.post('/', user.create);
-router.get('/', user.getAll);
-router.get('/:username', user.getOne);
-router.delete('/:username', user.delete);
+usersRouter.post('/', user.create);
+usersRouter.get('/', user.getAll);
+usersRouter.get('/:username', user.getOne);
+usersRouter.delete('/:username', user.delete);
 
-module.exports = router;
+const closeUserDB = () => {
+    user.closeDB();
+};
+
+module.exports = {usersRouter, closeUserDB};

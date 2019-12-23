@@ -2,18 +2,27 @@ import express = require('express');
 import session = require('express-session');
 import levelSession = require('level-session-store');
 import bodyparser from "body-parser";
+import * as fs from "fs";
 
 const app = express();
 const port: string = process.env.PORT || '8081';
 const LevelStore = levelSession(session);
 
-const authRouter = require('./routes/authentication');
-const usersRouter = require('./routes/users');
-const metricsRouter = require('./routes/metrics');
+const config = require('./helpers/_config');
+
+const {authRouter, closeUserAuthDB} = require('./routes/authentication');
+const {usersRouter, closeUserDB} = require('./routes/users');
+const {metricsRouter, closeMetricDB} = require('./routes/metrics');
 
 /* VIEW ENGINE EJS */
 app.set('views', __dirname + "/../view");
 app.set('view engine', 'ejs');
+
+const dbPath = process.env.NODE_ENV === 'test' ? config.dbPath['test'] : config.dbPath['development'];
+
+if (!fs.existsSync(dbPath)) {
+    fs.mkdirSync(dbPath);
+}
 
 usersRouter.use("/:username/metrics", metricsRouter);
 
@@ -29,9 +38,24 @@ app.use("/", authRouter);
 app.use("/users", usersRouter);
 
 /* SERVER LISTENING */
-app.listen(port, (err: Error) => {
+const server = app.listen(port, (err: Error) => {
     if (err) {
         throw err;
     }
     console.log(`server is listening on port ${port}`);
 });
+
+const closeDBs = () => {
+    closeMetricDB();
+    closeUserDB();
+    closeUserAuthDB();
+};
+
+const closeServer = () => {
+    closeDBs();
+    server.close();
+};
+
+module.exports = {
+    app, closeServer, closeDBs
+};

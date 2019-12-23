@@ -1,6 +1,8 @@
 import {UserHandler, Users} from "../models/users";
+const config = require('../helpers/_config');
 
-const dbUser: UserHandler = new UserHandler('./db/users');
+const dbPath = process.env.NODE_ENV === 'test' ? config.dbPath['test'] : config.dbPath['development'];
+const dbUser: UserHandler = new UserHandler(dbPath + '/users');
 
 /* User CRUD */
 exports.create = (req: any, res: any, next: any) => {
@@ -65,4 +67,8 @@ exports.disconnect = (req: any, res: any, next: any) => {
     delete req.session.loggedIn;
     delete req.session.user;
     res.redirect('/login')
+};
+
+exports.closeDB = () => {
+    dbUser.closeDB();
 };

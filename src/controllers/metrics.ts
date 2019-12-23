@@ -1,6 +1,8 @@
 import {Metric, MetricsHandler} from "../models/metrics";
+const config = require('../helpers/_config');
 
-const dbMet: MetricsHandler = new MetricsHandler('./db/metrics');
+const dbPath = process.env.NODE_ENV === 'test' ? config.dbPath['test'] : config.dbPath['development'];
+const dbMet: MetricsHandler = new MetricsHandler(dbPath + '/metrics');
 
 /* Metric CRUD */
 exports.create = (req: any, res: any) => {
@@ -31,3 +33,6 @@ exports.delete = (req: any, res: any) => {
     })
 };
 
+exports.closeDB = () => {
+  dbMet.closeDB();
+};
