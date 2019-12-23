@@ -27,7 +27,7 @@ app.use(bodyparser.json());
 app.use(bodyparser.urlencoded());
 app.use(session({
     secret: 'super secret phrase',
-    store: new LevelStore('./db/sessions'),
+    store: new LevelStore(dbPath + '/sessions'),
     resave: true,
     saveUninitialized: true
 }));
