@@ -72,7 +72,10 @@ exports.connect = (req: any, res: any, next: any) => {
         // if (err) next(err);
 
         if (result === undefined || !result.validatePassword(req.body.password)) {
-            res.redirect('/login');
+            // res.redirect('/login');
+            let message = " ";
+            message = 'Wrong username or wrong password, please try again ';
+            res.render('login', {message: message});
         } else {
             req.session.loggedIn = true;
             req.session.user = result;
