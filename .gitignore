@@ -11,4 +11,12 @@ node_modules/
 npm-debug.log*
 
 .idea/
-/db
+
+*.log
+*.ldb
+db/**/LOG
+db/**/LOCK
+db/**/CURRENT
+db_test/**/LOG
+db_test/**/LOCK
+db_test/**/CURRENT
