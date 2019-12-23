@@ -1,4 +1,6 @@
 import {Leveldb} from './leveldb';
+import WriteStream from "level-ws";
+import {Metric} from "./metrics";
 
 const bcrypt = require('bcryptjs');
 const saltRounds = 10;
@@ -78,6 +80,17 @@ export class UserHandler {
         this.db.put(`user:${user.username}`, `${user.getPassword()}:${user.email}`, (err: Error | null) => {
             callback(err)
         })
+    }
+
+    public update(
+        username: string,
+        user: Users,
+        callback: (error: Error | null) => void) {
+        const stream = WriteStream(this.db);
+        this.db.put(`user:${user.username}`, `${user.getPassword()}:${user.email}`, (err: Error | null) => {
+            callback(err)
+        });
+        stream.end()
     }
 
     public delete(username: string, callback: (err: Error | null) => void) {

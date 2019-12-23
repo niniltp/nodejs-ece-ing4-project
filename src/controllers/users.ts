@@ -1,4 +1,5 @@
 import {UserHandler, Users} from "../models/users";
+
 const config = require('../helpers/_config');
 
 const dbPath = process.env.NODE_ENV === 'test' ? config.dbPath['test'] : config.dbPath['development'];
@@ -34,6 +35,23 @@ exports.getOne = (req: any, res: any) => {
         } else res.status(200).json(result);
         dbUser.closeDB();
     })
+};
+
+exports.update = (req: any, res: any) => {
+    if (req.params.username !== req.body.username) res.status(409).send("username does not match with param");
+    else {
+        dbUser.get(req.params.username, function (err: Error | null, result?: Users) {
+            if (!err && result !== undefined && result !== null) {
+                let user = new Users(req.body.username, req.body.email, req.body.password);
+                dbUser.update(req.params.username, user, (err: Error | null) => {
+                    if (err) throw err;
+                    res.status(200).json(req.body);
+                });
+            } else {
+                res.status(409).send("User does not exist");
+            }
+        })
+    }
 };
 
 exports.delete = (req: any, res: any) => {
