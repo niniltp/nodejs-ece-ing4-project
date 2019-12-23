@@ -27,10 +27,6 @@ exports.getOne = function (req, res) {
     });
 };
 exports.update = function (req, res) {
-    console.log(req.params.metricId !== req.body.timestamp);
-    console.log(req.body.timestamp);
-    console.log(req.params.metricId);
-    console.log(req.body);
     if (req.params.metricId !== req.body.timestamp)
         res.status(409).send("timestamp does not match with param metricId");
     else {
