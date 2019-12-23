@@ -1,9 +1,9 @@
 import {expect} from 'chai'
-import {Leveldb} from "../leveldb"
-import {UserHandler, Users} from "../users";
+import {Leveldb} from "../models/leveldb"
+import {UserHandler, Users} from "../models/users";
 
 const dbPath: string = './db/test/users';
-var dbUser: UserHandler;
+let dbUser: UserHandler;
 
 const bcrypt = require('bcryptjs');
 
@@ -47,28 +47,29 @@ describe('Users', function () {
                 });
             })
         })
-    });
 
-    it('should save and get all', function (done) {
-        let user1: Users = new Users('jerry', 'jerry@gamil.com', 'soso');
-        let user2: Users = new Users('jane', 'janedoe@outlook.fr', 'imajane');
+        it('should save and get all', function (done) {
+            let user1: Users = new Users('jerry', 'jerry@gamil.com', 'soso');
+            let user2: Users = new Users('jane', 'janedoe@outlook.fr', 'imajane');
 
-        let users: Users[] = [];
-        users.push(user1);
-        users.push(user2);
+            let users: Users[] = [];
+            users.push(user1);
+            users.push(user2);
 
-        dbUser.save(user1, function (err: Error | null) {
-            dbUser.save(user2, function (err: Error | null) {
-                dbUser.getAll(function (err: Error | null, result?: Users[]) {
-                    expect(err).to.be.null;
-                    expect(result).to.not.be.undefined;
-                    expect(result).to.deep.include.members(users);
-                    done()
+            dbUser.save(user1, function (err: Error | null) {
+                dbUser.save(user2, function (err: Error | null) {
+                    dbUser.getAll(function (err: Error | null, result?: Users[]) {
+                        expect(err).to.be.null;
+                        expect(result).to.not.be.undefined;
+                        expect(result).to.deep.include.members(users);
+                        done()
+                    })
                 })
             })
         })
-    })
+    });
 });
+
 
 describe('#delete', function () {
     it('should delete the data', function (done) {

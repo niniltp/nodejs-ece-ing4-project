@@ -1,9 +1,9 @@
 import {expect} from 'chai'
-import {Metric, MetricsHandler} from '../metrics'
-import {Leveldb} from "../leveldb"
+import {Metric, MetricsHandler} from '../models/metrics'
+import {Leveldb} from "../models/leveldb"
 
 const dbPath: string = './db/test/metrics';
-var dbMet: MetricsHandler;
+let dbMet: MetricsHandler;
 
 describe('Metrics', function () {
     before(function () {
