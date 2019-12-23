@@ -2,6 +2,8 @@ import {UserHandler, Users} from "../models/users";
 const config = require('../helpers/_config');
 
 const dbPath = process.env.NODE_ENV === 'test' ? config.dbPath['test'] : config.dbPath['development'];
+const {createFile} = require('../helpers/files');
+createFile(dbPath + '/users');
 const dbUser: UserHandler = new UserHandler(dbPath + '/users');
 
 /* User CRUD */
