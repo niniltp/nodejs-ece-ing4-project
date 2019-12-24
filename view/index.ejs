@@ -73,10 +73,10 @@
                             form.classList.remove("was-validated");
                         }, false);
                         alert("Metric saved successfully.");
+                        $('#form_metric').val("");
                     }
                 }
             });
-            $('#form_metric').val("");
         }
     })
 
@@ -101,14 +101,14 @@
                                 form.classList.remove("was-validated");
                             }, false);
                             alert("Metric updated successfully.");
+                            $('#modify_metric').val("");
+                            $('#modify_form_metric').val("");
                         },
                         409: function (responseObject, textStatus, jqXHR) {
                             alert("Metric does not exist.");
                         }
                     }
                 });
-                $('#modify_metric').val("");
-                $('#modify_form_metric').val("");
             }
         }
     })
@@ -127,10 +127,10 @@
                             form.classList.remove("was-validated");
                         }, false);
                         alert("Metric deleted successfully.");
+                        $('#erase_metric').val("");
                     }
                 }
             });
-            $('#erase_metric').val("");
         }
 
     })
