@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.com/niniltp/nodejs-ece-ing4-project.svg?branch=master)](https://travis-ci.com/niniltp/nodejs-ece-ing4-project)
+
 # Introduction
 *By Jonathan BOUTAKHOT, Quynh-Nhien PHAN, Océane SALMERON (ING4, GP03)*
 
