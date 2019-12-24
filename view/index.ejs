@@ -9,31 +9,32 @@
     <hr>
     <button class="btn btn-danger mt-2" href="/logout" onClick='document.location.href="/logout"'>Logout</button>
     <h3><%= message %></h3>
-    <hr> 
-    <form action="#" class="form-inline  mt-2 mb-2" method="post">
+    <hr>
+    <form action="#" class="needs-validation form-inline mt-2 mb-2" method="post" novalidate>
         <div class="form-group">
             <label for="form_metric" class="mr-4">Add a metric: </label>
-            <input id="form_metric" class="form-control mr-4" type="number" name="value" placeholder="Enter metric value"/>
+            <input id="form_metric" class="form-control mr-4" type="number" name="value"
+                   placeholder="Enter metric value" required/>
         </div>
         <button class="btn btn-success" id="save-metric" type="submit" value="Submit">Save</button>
     </form>
     <hr>
-    <form action="#" class="form-inline  mt-2 mb-2" method="post">
+    <form action="#" class="needs-validation form-inline  mt-2 mb-2" method="post" novalidate>
         <div class="form-group">
             <label for="modify_metric" class="mr-4">Modify a metric : </label>
             <input id="modify_metric" class="form-control mr-4" type="text" name="metricID"
-                placeholder="Enter metric ID" />
+                   placeholder="Enter metric ID" required/>
             <input id="modify_form_metric" class="form-control mr-4" type="number" name="new_value"
-                placeholder="Enter its new value" />
+                   placeholder="Enter its new value" required/>
         </div>
         <button class="btn btn-success mt-2" id="change-metric" type="submit" value="Submit">Change metric</button>
     </form>
     <hr>
-    <form action="#" class="form-inline  mt-2 mb-2" method="post">
+    <form action="#" class="needs-validation form-inline  mt-2 mb-2" method="post" novalidate>
         <div class="form-group">
             <label for="erase_metric" class="mr-4">Delete a metric : </label>
             <input id="erase_metric" class="form-control mr-4" type="text" name="metricID"
-                placeholder="Enter metric ID" />
+                   placeholder="Enter metric ID" required/>
         </div>
         <button class="btn btn-danger mt-2" id="delete-metric" type="submit" value="Submit">Delete metric</button>
     </form>
@@ -64,9 +65,17 @@
             $.ajax("/users/<%= name %>/metrics", {
                 data: JSON.stringify(metrics),
                 method: "POST",
-                contentType: "application/json"
+                contentType: "application/json",
+                statusCode: {
+                    200: function (responseObject, textStatus, jqXHR) {
+                        let forms = document.getElementsByClassName('needs-validation');
+                        Array.prototype.filter.call(forms, function (form) {
+                            form.classList.remove("was-validated");
+                        }, false);
+                        alert("Metric saved successfully.");
+                    }
+                }
             });
-            alert("Metric added successfully.")
             $('#form_metric').val("");
         }
     })
@@ -81,12 +90,23 @@
                     timestamp: valueID,
                     value: parseFloat(value)
                 };
-                $.ajax("/users/<%= name %>/metrics/"+valueID, {
+                $.ajax("/users/<%= name %>/metrics/" + valueID, {
                     data: JSON.stringify(metric),
                     method: "PUT",
-                    contentType: "application/json"
+                    contentType: "application/json",
+                    statusCode: {
+                        200: function (responseObject, textStatus, jqXHR) {
+                            let forms = document.getElementsByClassName('needs-validation');
+                            Array.prototype.filter.call(forms, function (form) {
+                                form.classList.remove("was-validated");
+                            }, false);
+                            alert("Metric updated successfully.");
+                        },
+                        409: function (responseObject, textStatus, jqXHR) {
+                            alert("Metric does not exist.");
+                        }
+                    }
                 });
-                alert("Metric modified successfully.");
                 $('#modify_metric').val("");
                 $('#modify_form_metric').val("");
             }
@@ -95,13 +115,21 @@
     $('#delete-metric').click((e) => {
         e.preventDefault();
         const valueID = $('#erase_metric').val();
-        
+
         if (valueID) {
-            $.ajax("/users/<%= name %>/metrics/"+valueID, {
+            $.ajax("/users/<%= name %>/metrics/" + valueID, {
                 method: "DELETE",
-                contentType: "application/json"
+                contentType: "application/json",
+                statusCode: {
+                    200: function (responseObject, textStatus, jqXHR) {
+                        let forms = document.getElementsByClassName('needs-validation');
+                        Array.prototype.filter.call(forms, function (form) {
+                            form.classList.remove("was-validated");
+                        }, false);
+                        alert("Metric deleted successfully.");
+                    }
+                }
             });
-            alert("Metric deleted successfully.");
             $('#erase_metric').val("");
         }
 

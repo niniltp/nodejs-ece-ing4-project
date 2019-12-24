@@ -1,5 +1,5 @@
 exports.showLoginPage = (req: any, res: any) => {
-    let message = 'Welcome !';
+    let message = 'Welcome ';
     res.render('login', {message: message})};
 
 exports.showIndexPage = (req: any, res: any) => {
@@ -8,6 +8,6 @@ exports.showIndexPage = (req: any, res: any) => {
 };
 
 exports.showSignUpPage = (req: any, res: any) => {
-    var message = 'Welcome !';
+    var message = 'Welcome ';
     res.render('signup', {message: message})
 };

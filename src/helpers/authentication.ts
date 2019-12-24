@@ -2,7 +2,7 @@
 exports.authCheck = (req: any, res: any, next: any) => {
     if (req.session.loggedIn) {
         next();
-    } else res.redirect('/login');
+    } else{ res.redirect('/login')};
 };
 
 exports.usernameCheck = (req: any, res: any, next: any) => {
