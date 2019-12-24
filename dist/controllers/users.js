@@ -79,12 +79,12 @@ exports.connect = function (req, res, next) {
             // res.redirect('/login');
             var message = " ";
             message = 'Wrong username or wrong password, please try again ';
-            res.render('login', { message: message });
+            res.status(401).render('login', { message: message });
         }
         else {
             req.session.loggedIn = true;
             req.session.user = result;
-            res.redirect('/');
+            res.status(200).redirect('/');
         }
     });
 };

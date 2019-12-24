@@ -31,6 +31,7 @@ app.use(session({
 }));
 app.use("/", authRouter);
 app.use("/users", usersRouter);
+/* Test Graphique */
 /* SERVER LISTENING */
 var server = app.listen(port, function (err) {
     if (err) {
