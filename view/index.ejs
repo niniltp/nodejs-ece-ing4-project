@@ -23,23 +23,39 @@
             </div>
             <button class="btn btn-success" id="save-metric" type="submit" value="Submit">Save</button>
         </form>
-        <button class="btn btn-primary" id="show-metrics"> Show the metrics</button>
+        <button class="btn btn-primary" id="show-metrics"> Show metrics</button>
         <button class="btn btn-primary" id="show-line-graph"> Show line graph</button>
         <button class="btn btn-primary" id="show-bar-graph"> Show bar chart</button>
-        <div id="metrics" class="mt-5 mb-5"></div>
+        <div id="metrics" class="mt-5 mb-5 hide"></div>
         <svg class="line-chart hide"></svg>
         <svg class="bar-chart hide" width="900" height="500"></svg>
 
     </div>
 </body>
 <script type="text/javascript">
+
+    var isShown = {
+        'metrics': false,
+        'line': false,
+        'bar': false,
+
+    };
+
     $('#show-metrics').click((e) => {
         e.preventDefault();
+        if (isShown['metrics'] === false) {
+            isShown['metrics'] = true;
+            $('#show-metrics').text('Hide metrics');
+        } else {
+            isShown['metrics'] = false;
+            $('#show-metrics').text('Show metrics');
+        }
         $.getJSON("/users/<%= name %>/metrics", {}, (data) => {
             const content = data.map(d => {
                 return 'timestamp: ' + d.timestamp + ', value: ' + d.value + '<br/>';
             })
             $('#metrics').html(content);
+            $('#metrics').toggle();
         });
     })
     $('#save-metric').click((e) => {
@@ -61,14 +77,14 @@
             $('#form_metric').val("");
         }
     })
-    var isOn = false, isOn2 = false;
+
     /** On click to show graph **/
     $('#show-line-graph').click((e) => {
-        if (isOn === false) {
-            isOn = true;
+        if (isShown['line'] === false) {
+            isShown['line'] = true;
             $('#show-line-graph').text('Hide line graph');
         } else {
-            isOn = false;
+            isShown['line'] = false;
             $('#show-line-graph').text('Show line graph');
         }
         $('.line-chart').empty();
@@ -78,11 +94,11 @@
     })
 
     $('#show-bar-graph').click((e) => {
-        if (isOn2 === false) {
-            isOn2 = true;
+        if (isShown['bar'] === false) {
+            isShown['bar'] = true;
             $('#show-bar-graph').text('Hide bar chart');
         } else {
-            isOn2 = false;
+            isShown['bar'] = false;
             $('#show-bar-graph').text('Show bar chart');
         }
         $('.bar-chart').empty();
@@ -169,7 +185,7 @@
         g.append("path")
             .datum(data)
             .attr("fill", "none")
-            .attr("stroke", "steelblue")
+            .attr("stroke", "RoyalBlue")
             .attr("stroke-linejoin", "round")
             .attr("stroke-linecap", "round")
             .attr("stroke-width", 1.5)
@@ -198,7 +214,11 @@
             }
 
             data.forEach(function (d) {
-                d.timestamp = new Date(d.timestamp * 1000);
+                var dateObj = new Date(d.timestamp * 1000);
+                var month = dateObj.getMonth() + 1; //months from 1-12
+                var day = dateObj.getDate();
+                var date = day + "/" + month;
+                d.timestamp = date;
                 d.value = +d.value;
             });
             console.log(data);
@@ -219,7 +239,7 @@
             g.selectAll(".bar")
                 .data(data)
                 .enter().append("rect")
-                .style("fill", "orange")
+                .style("fill", "PaleVioletRed")
                 .attr("x", function (d) { return xScale(d.timestamp); })
                 .attr("y", function (d) { return yScale(d.value); })
                 .attr("width", xScale.bandwidth())
