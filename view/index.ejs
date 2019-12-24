@@ -53,6 +53,23 @@
     <% include scripts/drawGraph.js %>
 </script>
 <script type="text/javascript">
+    function updateDisplay() {
+        loadMetrics();
+        $('.line-chart').empty();
+        loadData(0);
+        $('.bar-chart').empty();
+        loadData(1);
+    }
+
+    function loadMetrics() {
+        $.getJSON("/users/<%= name %>/metrics", {}, (data) => {
+            const content = data.map(d => {
+                return 'timestamp: ' + d.timestamp + ', value: ' + d.value + '<br/>';
+            })
+            $('#metrics').html(content);
+        });
+    }
+
     var isShown = {
         'metrics': false,
         'line': false,
@@ -67,13 +84,8 @@
             isShown['metrics'] = false;
             $('#show-metrics').text('Show metrics');
         }
-        $.getJSON("/users/<%= name %>/metrics", {}, (data) => {
-            const content = data.map(d => {
-                return 'timestamp: ' + d.timestamp + ', value: ' + d.value + '<br/>';
-            })
-            $('#metrics').html(content);
-            $('#metrics').toggle();
-        });
+        $('#metrics').toggle();
+        loadMetrics();
     })
     $('#save-metric').click((e) => {
         e.preventDefault();
@@ -95,6 +107,7 @@
                         }, false);
                         alert("Metric saved successfully.");
                         $('#form_metric').val("");
+                        updateDisplay();
                     }
                 }
             });
@@ -123,6 +136,7 @@
                             alert("Metric updated successfully.");
                             $('#modify_metric').val("");
                             $('#modify_form_metric').val("");
+                            updateDisplay();
                         },
                         409: function (responseObject, textStatus, jqXHR) {
                             alert("Metric does not exist.");
@@ -147,6 +161,7 @@
                         }, false);
                         alert("Metric deleted successfully.");
                         $('#erase_metric').val("");
+                        updateDisplay();
                     }
                 }
             });
