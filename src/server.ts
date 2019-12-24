@@ -34,10 +34,7 @@ app.use(session({
 app.use("/", authRouter);
 app.use("/users", usersRouter);
 /* Test Graphique */
-// Show page for charts
-authRouter.get('/graph', (req: any, res: any) => {
-    res.render('graphTest')
-});
+
 /* SERVER LISTENING */
 const server = app.listen(port, (err: Error) => {
     if (err) {
