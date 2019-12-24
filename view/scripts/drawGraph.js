@@ -1,3 +1,36 @@
+/****** Script graph *******/
+const api = '/users/<%= name %>/metrics';
+
+/** Loading data from API **/
+function loadData(id) {
+    fetch('/users/<%= name %>/metrics')
+        .then(res => res.json())
+        .then(res => {
+            console.log(res);
+            var parsedData = parseData(res);
+            if (id === 0) {
+                drawChart(parsedData);
+            } else if (id === 1) {
+                drawBarChart(parsedData);
+            }
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+}
+
+/** Parse data in array **/
+function parseData(data) {
+    var arr = [];
+    const content = data.map(d => {
+        arr.push({
+            timestamp: d.timestamp,
+            value: d.value,
+        });
+    });
+    return arr;
+}
+
 /** Creates a chart using D3 **/
 function drawChart(data) {
     var svgWidth = 900, svgHeight = 400;
@@ -120,37 +153,4 @@ function drawBarChart(data) {
                 return height - yScale(d.value);
             });
     });
-}
-
-/****** Script graph *******/
-const api = '/users/<%= name %>/metrics';
-
-/** Loading data from API **/
-function loadData(id) {
-    fetch('/users/<%= name %>/metrics')
-        .then(res => res.json())
-        .then(res => {
-            console.log(res);
-            var parsedData = parseData(res);
-            if (id === 0) {
-                drawChart(parsedData);
-            } else if (id === 1) {
-                drawBarChart(parsedData);
-            }
-        })
-        .catch(function (error) {
-            console.log(error);
-        });
-}
-
-/** Parse data in array **/
-function parseData(data) {
-    var arr = [];
-    const content = data.map(d => {
-        arr.push({
-            timestamp: d.timestamp,
-            value: d.value,
-        });
-    });
-    return arr;
 }
