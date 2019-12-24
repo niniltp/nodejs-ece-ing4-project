@@ -63,17 +63,20 @@
 
     function loadMetrics() {
         $.getJSON("/users/<%= name %>/metrics", {}, (data) => {
-            const content = data.map(d => {
-                return 'timestamp: ' + d.timestamp + ', value: ' + d.value + '<br/>';
+            const th = '<table class="table table-striped"><thead><tr><th>Timestamp</th><th>Value</th></tr></thead><tbody>';
+            const tb = '</tbody></table>';
+            let content = '';
+            data.forEach(d => {
+                content = content + '<tr><td>' + d.timestamp + '</td><td>' + d.value + '<td/></tr>';
             })
-            $('#metrics').html(content);
+            $('#metrics').html(th + content + tb);
         });
     }
 
     var isShown = {
         'metrics': false,
         'line': false,
-        'bar': false,
+        'bar': false
     };
     $('#show-metrics').click((e) => {
         e.preventDefault();
