@@ -49,66 +49,122 @@ describe('API', () => {
                     });
             });
         });
-/*        describe('/UPDATE/:username user', () => {
-            it('should UPDATE user of the given id', (done) => {
-                const username: string = 'jean';
-                const email: string = 'jean@gamil.com';
+        describe('/DELETE/:username user', () => {
+            it('should DELETE user by the given id', (done) => {
+                const username: string = 'johny';
+                const password = 'secret';
+                const email: string = 'john@gamil.com';
 
-                const newEmail = "jass@gmail.com";
-                const newPassword = 'joking';
+                let user: Users = new Users(username, email, password, false);
 
-                let user: Users = new Users(username, email, newPassword, false);
-                let updatedUser: Users = new Users(username, newEmail, newPassword, false);
+                let agent = chai.request.agent(app);
 
-                // Post a user
-                chai.request(app)
-                    .post('/users')
+                agent
+                    .post('/login')
+                    .send(user)
+                    .end((err, res) => {
+                        chai.expect(res).to.have.status(200);
+
+                        return agent
+                            .delete('/users/' + username)
+                            .end((err, res) => {
+                                if (err) done(err);
+                                chai.expect(err).to.be.null;
+                                chai.expect(res).to.not.be.undefined;
+                                chai.expect(res).to.be.a('object');
+                                chai.expect(res).to.have.status(200);
+                                done();
+                            });
+                    });
+            });
+        });
+        describe('/POST login', () => {
+            it('should not login user with wrong credentials', (done) => {
+                const username: string = 'johny';
+                const email: string = 'john@gamil.com';
+                const password: string = 'wrong';
+
+                let user: Users = new Users(username, email, password, false);
+                let agent = chai.request.agent(app);
+
+                agent
+                    .post('/login')
                     .send(user)
                     .end((err, res) => {
                         if (err) done(err);
-
-                        // Log in as the user
-                        chai.request(app)
-                            .post('/login')
-                            .send({"username": username, "password": newPassword})
-                            .end((err, res) => {
-                                if (err) done(err);
-
-                                // Update the user
-                                chai.request(app)
-                                    .put('/users/' + username)
-                                    .send(updatedUser)
-                                    .end((err, res) => {
-                                        if (err) done(err);
-                                        chai.expect(err).to.be.null;
-                                        chai.expect(res).to.not.be.undefined;
-                                        chai.expect(res).to.have.status(200);
-                                        chai.expect(res).to.be.an('object');
-
-                                        chai.expect(res.body).to.be.an('object');
-                                        chai.expect(res.body).to.be.have.property('username');
-                                        chai.expect(res.body).to.be.have.property('email');
-                                        chai.expect(res.body).to.be.have.property('password');
-                                        expect(res.body).to.not.include({
-                                            username: username,
-                                            email: email
-                                        });
-
-                                        chai.expect(res.body).to.include({
-                                            username: username,
-                                            email: newEmail
-                                        });
-                                        done();
-                                    });
-                            });
+                        chai.expect(res).to.have.status(401);
+                        agent.close();
+                        done();
                     });
-
             });
-        });*/
+            it('should login user with right credentials', (done) => {
+                const username: string = 'johny';
+                const email: string = 'john@gamil.com';
+                const password: string = 'secret';
+
+                let user: Users = new Users(username, email, password, false);
+                let agent = chai.request.agent(app);
+
+                agent
+                    .post('/login')
+                    .send(user)
+                    .end((err, res) => {
+                        if (err) done(err);
+                        chai.expect(res).to.have.status(200);
+                        agent.close();
+                        done();
+                    });
+            });
+        });
+        describe('/UPDATE/:username user', () => {
+            it('should UPDATE user of the given id', (done) => {
+                const username: string = 'johny';
+                const email: string = 'johny@gamil.com';
+                const password = 'secret';
+
+                const newEmail = 'jass@gmail.com';
+                const newPassword = 'newsecret';
+
+                let user: Users = new Users(username, email, password, false);
+                let updatedUser: Users = new Users(username, newEmail, newPassword, false);
+
+                let agent = chai.request.agent(app);
+
+                agent
+                    .post('/login')
+                    .send(user)
+                    .end((err, res) => {
+                        chai.expect(res).to.have.status(200);
+
+                        return agent.put('/users/' + username)
+                            .send(updatedUser)
+                            .end((err, res) => {
+                                chai.expect(res).to.not.be.undefined;
+                                chai.expect(res).to.have.status(200);
+                                chai.expect(res.body).to.be.an('object');
+                                chai.expect(res.body).to.be.have.property('username');
+                                chai.expect(res.body).to.be.have.property('email');
+                                chai.expect(res.body).to.be.have.property('password');
+                                expect(res.body).to.not.include({
+                                    username: username,
+                                    email: email
+                                });
+
+                                chai.expect(res.body).to.include({
+                                    username: username,
+                                    email: newEmail
+                                });
+                                agent.close();
+                                done();
+                            })
+
+                    })
+            });
+        });
         describe('/GET/:username user', () => {
             it('should GET user by the given id', (done) => {
                 const username: string = 'johny';
-                const email: string = 'john@gamil.com';
+                const newEmail = "jass@gmail.com";
 
                 chai.request(app)
                     .get('/users/' + username)
@@ -126,7 +182,7 @@ describe('API', () => {
 
                         chai.expect(res.body).to.include({
                             username: username,
-                            email: email
+                            email: newEmail
                         });
 
                         done();
@@ -134,22 +190,7 @@ describe('API', () => {
             });
         });
 
-        describe('/DELETE/:username user', () => {
-            it('should DELETE user by the given id', (done) => {
-                const username: string = 'johny';
 
-                chai.request(app)
-                    .delete('/users/' + username)
-                    .end((err, res) => {
-                        if (err) done(err);
-                        chai.expect(err).to.be.null;
-                        chai.expect(res).to.not.be.undefined;
-                        chai.expect(res).to.be.a('object');
-                        chai.expect(res).to.have.status(200);
-                        done();
-                    });
-            });
-        });
     });
 
     after(() => {
