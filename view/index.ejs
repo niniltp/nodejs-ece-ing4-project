@@ -6,7 +6,7 @@
     <script src="https://d3js.org/d3.v4.js"></script>
     <script src="https://d3js.org/d3-selection-multi.v1.min.js"></script>
     <style>
-        .hide{
+        .hide {
             display: none;
         }
     </style>
@@ -24,11 +24,12 @@
             <button class="btn btn-success" id="save-metric" type="submit" value="Submit">Save</button>
         </form>
         <button class="btn btn-primary" id="show-metrics"> Show the metrics</button>
-        <button class="btn btn-primary" id="show-graph"> Show graph</button>
+        <button class="btn btn-primary" id="show-line-graph"> Show line graph</button>
+        <button class="btn btn-primary" id="show-bar-graph"> Show bar chart</button>
         <div id="metrics" class="mt-5 mb-5"></div>
         <svg class="line-chart hide"></svg>
         <svg class="bar-chart hide" width="900" height="500"></svg>
-        
+
     </div>
 </body>
 <script type="text/javascript">
@@ -60,35 +61,59 @@
             $('#form_metric').val("");
         }
     })
-
-    $('#show-graph').click((e)=>{
+    var isOn = false, isOn2 = false;
+    /** On click to show graph **/
+    $('#show-line-graph').click((e) => {
+        if (isOn === false) {
+            isOn = true;
+            $('#show-line-graph').text('Hide line graph');
+        } else {
+            isOn = false;
+            $('#show-line-graph').text('Show line graph');
+        }
+        $('.line-chart').empty();
+        loadData(0);
         $('.line-chart').toggle();
+
     })
 
-    /* Script graph */
+    $('#show-bar-graph').click((e) => {
+        if (isOn2 === false) {
+            isOn2 = true;
+            $('#show-bar-graph').text('Hide bar chart');
+        } else {
+            isOn2 = false;
+            $('#show-bar-graph').text('Show bar chart');
+        }
+        $('.bar-chart').empty();
+        loadData(1);
+        $('.bar-chart').toggle();
+
+    })
+
+    /****** Script graph *******/
     const api = '/users/<%= name %>/metrics';
 
-
-    /**
-     * Loading data from API when DOM Content has been loaded'.
-     */
-    document.addEventListener("DOMContentLoaded", function (event) {
-
+    /** Loading data from API **/
+    function loadData(id) {
         fetch('/users/<%= name %>/metrics')
             .then(res => res.json())
             .then(res => {
                 console.log(res);
                 var parsedData = parseData(res);
-                drawChart(parsedData);
-                drawBarChart(parsedData);
+                if (id === 0) {
+                    drawChart(parsedData);
+                } else if (id === 1) {
+                    drawBarChart(parsedData);
+                }
+
+
             })
             .catch(function (error) { console.log(error); });
-    });
+    };
 
-    /**
-     * Parse data into key-value pairs
-     * @param {object} data Object containing historical data of BPI
-     */
+
+    /** Parse data in array **/
     function parseData(data) {
         var arr = [];
         const content = data.map(d => {
@@ -98,13 +123,9 @@
             });
         })
         return arr;
-
     }
 
-    /**
-     * Creates a chart using D3
-     * @param {object} data Object containing historical data of BPI
-     */
+    /** Creates a chart using D3 **/
     function drawChart(data) {
         var svgWidth = 900, svgHeight = 400;
         var margin = { top: 20, right: 20, bottom: 30, left: 50 };
@@ -156,7 +177,7 @@
     }
 
 
-    /** BAR CHART **/
+    /** Create a bar chart using D3 **/
     function drawBarChart(data) {
 
         var svg = d3.select(".bar-chart"),
