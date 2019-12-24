@@ -2,6 +2,8 @@
 <html lang="en">
 <head>
     <% include partials/head.ejs %>
+    <script src="https://d3js.org/d3.v4.js"></script>
+    <script src="https://d3js.org/d3-selection-multi.v1.min.js"></script>
 </head>
 <body class="container">
 <div class="col-md-6 col-md-offset-3">
@@ -51,14 +53,11 @@
     <% include scripts/drawGraph.js %>
 </script>
 <script type="text/javascript">
-
     var isShown = {
         'metrics': false,
         'line': false,
         'bar': false,
-
     };
-
     $('#show-metrics').click((e) => {
         e.preventDefault();
         if (isShown['metrics'] === false) {
@@ -79,7 +78,6 @@
     $('#save-metric').click((e) => {
         e.preventDefault();
         const value = $('#form_metric').val();
-
         if (value) {
             const metrics = [{
                 timestamp: (new Date().getTime()).toString(),
@@ -102,7 +100,6 @@
             });
         }
     })
-
     $('#change-metric').click((e) => {
         e.preventDefault();
         const valueID = $('#modify_metric').val();
@@ -138,7 +135,6 @@
     $('#delete-metric').click((e) => {
         e.preventDefault();
         const valueID = $('#erase_metric').val();
-
         if (valueID) {
             $.ajax("/users/<%= name %>/metrics/" + valueID, {
                 method: "DELETE",
@@ -155,9 +151,7 @@
                 }
             });
         }
-
     })
-
     /** On click to show graph **/
     $('#show-line-graph').click((e) => {
         if (isShown['line'] === false) {
@@ -171,7 +165,6 @@
         loadData(0);
         $('.line-chart').toggle();
     })
-
     $('#show-bar-graph').click((e) => {
         if (isShown['bar'] === false) {
             isShown['bar'] = true;
