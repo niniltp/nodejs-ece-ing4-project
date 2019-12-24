@@ -8,7 +8,8 @@ var dbUser = new users_1.UserHandler(dbPath + '/users');
 exports.create = function (req, res, next) {
     dbUser.get(req.body.username, function (err, result) {
         if (!err || result !== undefined) {
-            res.status(409).send("user already exists");
+            var message = 'Username already exist ! Please use another username ';
+            res.status(409).send(message);
         }
         else {
             var user = new users_1.Users(req.body.username, req.body.email, req.body.password);

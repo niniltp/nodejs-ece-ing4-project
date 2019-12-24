@@ -6,26 +6,23 @@
 <body class="container">
     <div class="col-sm-8 col-sm-offset-2">
         <div class="jumbotron text-center">
-            <p>Sign up</p>
-          <form action="/users" method="post">
+            <h2>Sign up</h2>
+          <form action="/users" method="post" class="needs-validation" novalidate>
             <div class="form-group">
-                <label for="form_username">Username</label>
-                <input id="form_username" class="form-control" type="text" name="username" placeholder="Enter Name"
-                value="<%= typeof name != 'undefined' ? name : '' %>"/>
+                <label for="form-username">Username</label>
+                <input id="form-username" class="form-control" type="text" name="username" placeholder="Enter Name" required/>
             </div>
             <div class="form-group">
                 <label>Email</label>
-                <input type="text" class="form-control" name="email" placeholder="Enter Email"
-                value="<%= typeof email != 'undefined' ? email : '' %>">
+                <input id="form-email" type="email" class="form-control" name="email" placeholder="Enter Email" required>
             </div>
             <div class="form-group">
               <label>Password</label>
-              <input id="form-password" type="password" class="form-control" name="password" placeholder="Create Password"
-              value="<%= typeof password != 'undefined' ? password : '' %>"/>
+              <input id="form-password" type="password" class="form-control" name="password" required/>
             </div>
             <h3><%= message %> !</h3>
             <div>
-              <button class="btn btn-primary btn-block" type="submit" value="Submit">Sign up</button>
+              <button id="signup" class="btn btn-primary btn-block" type="submit" value="Submit">Sign up</button>
             </div>
           </form>
         </div>
@@ -33,4 +30,36 @@
         <span class="fa fa-sign-in"> Already have an account?<a href="/login"> Login</a></span>
       </div>
 </body>
+<script type="text/javascript">
+    $('#signup').click((e) => {
+        e.preventDefault();
+        const username = $('#form-username').val();
+        const password = $('#form-password').val();
+        const email = $('#form-email').val();
+
+        if (username && password && email) {
+            if (username.length >= 4 && password.length >= 4 && email.length >= 1) {
+                const user = {
+                    username: username,
+                    password: password,
+                    email: email
+                };
+                $.ajax("/users", {
+                    data: JSON.stringify(user),
+                    method: "POST",
+                    contentType: "application/json",
+                    statusCode: {
+                        200: function(responseObject, textStatus, jqXHR) {
+                            alert("User created successfully");
+                            document.location.href="/"
+                        },
+                        409: function(responseObject, textStatus, jqXHR) {
+                            alert("User already exists");
+                        }
+                    }
+                })
+            }
+        }
+    })
+</script>
 </html>

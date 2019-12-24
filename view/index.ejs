@@ -2,6 +2,8 @@
 <html lang="en">
 <head>
     <% include partials/head.ejs %>
+    <script src="https://d3js.org/d3.v4.js"></script>
+    <script src="https://d3js.org/d3-selection-multi.v1.min.js"></script>
 </head>
 <body class="container">
 <div class="col-md-6 col-md-offset-3">
@@ -9,53 +11,73 @@
     <hr>
     <button class="btn btn-danger mt-2" href="/logout" onClick='document.location.href="/logout"'>Logout</button>
     <h3><%= message %></h3>
-    <hr> 
-    <form action="#" class="form-inline  mt-2 mb-2" method="post">
+    <hr>
+    <form action="#" class="needs-validation form-inline mt-2 mb-2" method="post" novalidate>
         <div class="form-group">
             <label for="form_metric" class="mr-4">Add a metric: </label>
-            <input id="form_metric" class="form-control mr-4" type="number" name="value" placeholder="Enter metric value"/>
+            <input id="form_metric" class="form-control mr-4" type="number" name="value"
+                   placeholder="Enter metric value" required/>
         </div>
         <button class="btn btn-success" id="save-metric" type="submit" value="Submit">Save</button>
     </form>
     <hr>
-    <form action="#" class="form-inline  mt-2 mb-2" method="post">
+    <form action="#" class="needs-validation form-inline  mt-2 mb-2" method="post" novalidate>
         <div class="form-group">
             <label for="modify_metric" class="mr-4">Modify a metric : </label>
             <input id="modify_metric" class="form-control mr-4" type="text" name="metricID"
-                placeholder="Enter metric ID" />
+                   placeholder="Enter metric ID" required/>
             <input id="modify_form_metric" class="form-control mr-4" type="number" name="new_value"
-                placeholder="Enter its new value" />
+                   placeholder="Enter its new value" required/>
         </div>
         <button class="btn btn-success mt-2" id="change-metric" type="submit" value="Submit">Change metric</button>
     </form>
     <hr>
-    <form action="/users/<%= name %>/metrics" class="form-inline  mt-2 mb-2" method="post">
+    <form action="#" class="needs-validation form-inline  mt-2 mb-2" method="post" novalidate>
         <div class="form-group">
             <label for="erase_metric" class="mr-4">Delete a metric : </label>
             <input id="erase_metric" class="form-control mr-4" type="text" name="metricID"
-                placeholder="Enter metric ID" />
+                   placeholder="Enter metric ID" required/>
         </div>
         <button class="btn btn-danger mt-2" id="delete-metric" type="submit" value="Submit">Delete metric</button>
     </form>
     <hr>
     <button class="btn btn-primary" id="show-metrics"> Show the metrics</button>
-    <div id="metrics" class="mt-5 mb-5"></div>
+    <button class="btn btn-primary" id="show-line-graph"> Show line graph</button>
+    <button class="btn btn-primary" id="show-bar-graph"> Show bar chart</button>
+    <div id="metrics" class="mt-5 mb-5 hide"></div>
+    <svg class="line-chart hide"></svg>
+    <svg class="bar-chart hide" width="900" height="500"></svg>
 </div>
 </body>
 <script type="text/javascript">
+    <% include scripts/drawGraph.js %>
+</script>
+<script type="text/javascript">
+    var isShown = {
+        'metrics': false,
+        'line': false,
+        'bar': false,
+    };
     $('#show-metrics').click((e) => {
         e.preventDefault();
+        if (isShown['metrics'] === false) {
+            isShown['metrics'] = true;
+            $('#show-metrics').text('Hide metrics');
+        } else {
+            isShown['metrics'] = false;
+            $('#show-metrics').text('Show metrics');
+        }
         $.getJSON("/users/<%= name %>/metrics", {}, (data) => {
             const content = data.map(d => {
                 return 'timestamp: ' + d.timestamp + ', value: ' + d.value + '<br/>';
             })
             $('#metrics').html(content);
+            $('#metrics').toggle();
         });
     })
     $('#save-metric').click((e) => {
         e.preventDefault();
         const value = $('#form_metric').val();
-
         if (value) {
             const metrics = [{
                 timestamp: (new Date().getTime()).toString(),
@@ -64,13 +86,20 @@
             $.ajax("/users/<%= name %>/metrics", {
                 data: JSON.stringify(metrics),
                 method: "POST",
-                contentType: "application/json"
+                contentType: "application/json",
+                statusCode: {
+                    200: function (responseObject, textStatus, jqXHR) {
+                        let forms = document.getElementsByClassName('needs-validation');
+                        Array.prototype.filter.call(forms, function (form) {
+                            form.classList.remove("was-validated");
+                        }, false);
+                        alert("Metric saved successfully.");
+                        $('#form_metric').val("");
+                    }
+                }
             });
-            alert("Metric added successfully.")
-            $('#form_metric').val("");
         }
     })
-
     $('#change-metric').click((e) => {
         e.preventDefault();
         const valueID = $('#modify_metric').val();
@@ -81,33 +110,72 @@
                     timestamp: valueID,
                     value: parseFloat(value)
                 };
-                console.log(JSON.stringify(metric));
-                console.log("/users/<%= name %>/metrics/"+valueID);
-                $.ajax("/users/<%= name %>/metrics/"+valueID, {
+                $.ajax("/users/<%= name %>/metrics/" + valueID, {
                     data: JSON.stringify(metric),
                     method: "PUT",
-                    contentType: "application/json"
+                    contentType: "application/json",
+                    statusCode: {
+                        200: function (responseObject, textStatus, jqXHR) {
+                            let forms = document.getElementsByClassName('needs-validation');
+                            Array.prototype.filter.call(forms, function (form) {
+                                form.classList.remove("was-validated");
+                            }, false);
+                            alert("Metric updated successfully.");
+                            $('#modify_metric').val("");
+                            $('#modify_form_metric').val("");
+                        },
+                        409: function (responseObject, textStatus, jqXHR) {
+                            alert("Metric does not exist.");
+                        }
+                    }
                 });
-                alert("Metric modified successfully.");
-                $('#modify_metric').val("");
-                $('#modify_form_metric').val("");
             }
         }
     })
     $('#delete-metric').click((e) => {
         e.preventDefault();
         const valueID = $('#erase_metric').val();
-        
         if (valueID) {
-            const metric_id = parseFloat(valueID);
-            $.ajax("/users/<%= name %>/metrics/"+metric_id, {
+            $.ajax("/users/<%= name %>/metrics/" + valueID, {
                 method: "DELETE",
-                contentType: "application/json"
+                contentType: "application/json",
+                statusCode: {
+                    200: function (responseObject, textStatus, jqXHR) {
+                        let forms = document.getElementsByClassName('needs-validation');
+                        Array.prototype.filter.call(forms, function (form) {
+                            form.classList.remove("was-validated");
+                        }, false);
+                        alert("Metric deleted successfully.");
+                        $('#erase_metric').val("");
+                    }
+                }
             });
-            alert("Metric deleted successfully.");
-            $('#erase_metric').val("");
         }
-
+    })
+    /** On click to show graph **/
+    $('#show-line-graph').click((e) => {
+        if (isShown['line'] === false) {
+            isShown['line'] = true;
+            $('#show-line-graph').text('Hide line graph');
+        } else {
+            isShown['line'] = false;
+            $('#show-line-graph').text('Show line graph');
+        }
+        $('.line-chart').empty();
+        loadData(0);
+        $('.line-chart').toggle();
+    })
+    $('#show-bar-graph').click((e) => {
+        if (isShown['bar'] === false) {
+            isShown['bar'] = true;
+            $('#show-bar-graph').text('Hide bar chart');
+        } else {
+            isShown['bar'] = false;
+            $('#show-bar-graph').text('Show bar chart');
+        }
+        $('.bar-chart').empty();
+        loadData(1);
+        $('.bar-chart').toggle();
     })
 </script>
 </html>

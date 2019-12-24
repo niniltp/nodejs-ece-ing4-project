@@ -33,6 +33,7 @@ app.use(session({
 }));
 app.use("/", authRouter);
 app.use("/users", usersRouter);
+/* Test Graphique */
 
 /* SERVER LISTENING */
 const server = app.listen(port, (err: Error) => {

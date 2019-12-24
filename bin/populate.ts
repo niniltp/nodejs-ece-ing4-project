@@ -7,8 +7,8 @@ const {createFile} = require('../src/helpers/files');
 const {getRandomInt} = require('../src/helpers/random');
 
 const dbPath = config.dbPath['development'];
-createFile(dbPath);
 Leveldb.clear(dbPath);
+createFile(dbPath);
 
 /* Populate DB */
 const dbUser = new UserHandler('./db/users');
